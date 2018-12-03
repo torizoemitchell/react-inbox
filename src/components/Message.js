@@ -2,12 +2,14 @@ import React from 'react'
 
 export default class Message extends React.Component {
 
-  state = {
-    selected: false
-  }
-
-  // selectMessage = (id) => {
-  //   this.props.selectMessageCB(id)
+  // state = {
+  //   isChecked: false
+  // }
+  //
+  // checkTheBox = () => {
+  //   this.setState({
+  //     isChecked: !this.state.isChecked
+  //   })
   // }
 
 

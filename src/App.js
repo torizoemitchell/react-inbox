@@ -56,25 +56,25 @@ class App extends Component {
     })
   }
 
-  updateStarCB = (id) => {
-    let i = this.findIndexOfId(id)
-    //toggle starred
-    console.log("i: ", i)
-    console.log("this.state.messages: ", this.state.messages)
-    let newMessage = {
-      ...this.state.messages[i],
-      starred: (!this.state.messages[i].starred)
-    }
-    //set new state
+  updateStarCB = async(id) => {
+    //post changes to API
+    const response = await fetch(`${process.env.REACT_APP_API_URL}messages`, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messageIds: [parseInt(id)],
+        command: "star"
+      })
+    })
+    const jsonResponse = await response.json()
+    //set the new state
     this.setState({
       ...this.state,
-      messages: [
-        ...this.state.messages.slice(0, i),
-        newMessage,
-        ...this.state.messages.slice(i + 1)
-      ]
+      messages: jsonResponse
     })
-
   }
 
   render() {
