@@ -3,14 +3,6 @@ import Message from './Message.js'
 
 export default class Messages extends React.Component{
 
-  constructor(props){
-    super(props)
-    this.state = {
-      selectedMessages: []
-    }
-    console.log("Messages: this.state.selectedMessages: ", this.state.selectedMessages)
-  }
-
   selectMessageCB = (id) => {
     // this.setState({
     //   ...selectedMessages,
