@@ -6,11 +6,10 @@ export default class Message extends React.Component {
     selected: false
   }
 
-  selectMessage = (id) => {
-    this.setState({
-      selected: !this.state.selected
-    })
-  }
+  // selectMessage = (id) => {
+  //   this.props.selectMessageCB(id)
+  // }
+
 
   checkStateOfMessage(read, selected){
     if(read && selected){
@@ -21,11 +20,11 @@ export default class Message extends React.Component {
       console.log("unread && selected")
       return "row message unread selected"
     }
-    else if (read && !selected){
+    else if (read && (!selected || selected === undefined)){
       console.log("unread && selected")
-      return "row message unread selected"
+      return "row message read"
     }
-    else if (!read && !selected){
+    else if (!read && (!selected || selected === undefined)){
       console.log("unread && selected")
       return "row message unread"
     }
@@ -37,27 +36,30 @@ export default class Message extends React.Component {
 
 
   render(){
-    console.log("this.props.", this.props)
+
     const {
       subject,
       body,
       labels,
       starred,
       id,
-      read
+      read,
+      selected
     } = this.props.messageInfo
-    const selected = this.state.selected
-
+    console.log("selected: ", selected)
     return(
 
       <div className={this.checkStateOfMessage(read, selected)}>
         <div className="col-xs-1">
           <div className="row">
             <div className="col-xs-2">
-              <input type="checkbox" onClick={(e) =>{e.preventDefault();this.selectMessage(id)}} />
+              <input type="checkbox"
+                checked={selected ? "checked" : ''}
+                onChange={(e) =>{e.preventDefault();this.props.selectMessageCB(id)}}
+               />
             </div>
-            <div className="col-xs-2">
-              {starred ? <i className="star fa fa-star"></i> : <i className="star fa fa-star-o"></i>}
+            <div className="col-xs-2" onClick={(e)=>{console.log(e.target);this.props.updateStarCB(e.target.id)}}>
+              {starred ? <i className="star fa fa-star" id={id}></i> : <i className="star fa fa-star-o" id={id}></i>}
             </div>
           </div>
         </div>

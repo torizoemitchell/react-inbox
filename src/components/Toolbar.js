@@ -11,7 +11,7 @@ const Toolbar = () => (
           unread messages
         </p>
 
-        <a className="btn btn-danger">
+        <a className="btn btn-danger" href="somewhere">
           <i className="fa fa-plus"></i>
         </a>
 

@@ -3,13 +3,6 @@ import Message from './Message.js'
 
 export default class Messages extends React.Component{
 
-  selectMessageCB = (id) => {
-    // this.setState({
-    //   ...selectedMessages,
-    //   id
-    // })
-  }
-
   render(){
     console.log("messages.js messages: ", this.props.messages)
     return(
@@ -20,7 +13,8 @@ export default class Messages extends React.Component{
               <Message
                 key={elem.id}
                 messageInfo={this.props.messages[i]}
-                selectMessageCB={this.selectMessageCB}
+                selectMessageCB={this.props.selectMessageCB}
+                updateStarCB={this.props.updateStarCB}
               />
             )}
           </div>
