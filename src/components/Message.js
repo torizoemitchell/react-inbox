@@ -55,7 +55,7 @@ export default class Message extends React.Component {
             <div className="col-xs-2">
               <input type="checkbox"
                 checked={selected ? "checked" : ''}
-                onChange={(e) =>{e.preventDefault();this.props.selectMessageCB(id)}}
+                onChange={(e) =>{this.props.selectMessageCB(id)}}
                />
             </div>
             <div className="col-xs-2" onClick={(e)=>{console.log(e.target);this.props.updateStarCB(e.target.id)}}>
