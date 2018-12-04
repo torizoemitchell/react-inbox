@@ -6,15 +6,15 @@ export default class Toolbar extends React.Component {
 
   selectionIndicator = (selectedMessages, messages) => {
     if(selectedMessages.length === messages.length){
-      console.log("all checked")
+      // console.log("all checked")
       return "fa fa-check-square-o"
     }
     else if(selectedMessages.length > 0){
-      console.log("some checked")
+      // console.log("some checked")
       return "fa fa-minus-square-o"
     }
     else{
-      console.log("none checked")
+      // console.log("none checked")
       return "fa fa-square-o"
     }
   }
@@ -27,6 +27,9 @@ export default class Toolbar extends React.Component {
       bulkSelectCB,
       markAsReadCB,
       markAsUnreadCB,
+      deleteMessagesCB,
+      addLabelsCB,
+      removeLabelsCB,
       numOfUnreadMessages
     } = this.props
 
@@ -51,21 +54,21 @@ export default class Toolbar extends React.Component {
 
           <button className="btn btn-default" onClick={(e) => {e.preventDefault(); markAsUnreadCB()}} disabled={selectedMessages.length === 0 ? true : false}>Mark As Unread</button>
 
-            <select className="form-control label-select" disabled={selectedMessages.length === 0 ? true : false}>
+        <select className="form-control label-select" disabled={selectedMessages.length === 0 ? true : false} onChange={(e) => {e.preventDefault(); addLabelsCB(e.target.value)}}>
               <option>Apply label</option>
               <option value="dev">dev</option>
               <option value="personal">personal</option>
               <option value="gschool">gschool</option>
             </select>
 
-            <select className="form-control label-select" disabled={selectedMessages.length === 0 ? true : false}>
+            <select className="form-control label-select" disabled={selectedMessages.length === 0 ? true : false} onChange={(e) => {e.preventDefault(); removeLabelsCB(e.target.value)}}>
               <option>Remove label</option>
               <option value="dev">dev</option>
               <option value="personal">personal</option>
               <option value="gschool">gschool</option>
             </select>
 
-            <button className="btn btn-default" disabled={selectedMessages.length === 0 ? true : false}>
+            <button className="btn btn-default" onClick={(e) => {e.preventDefault(); deleteMessagesCB()}} disabled={selectedMessages.length === 0 ? true : false}>
               <i className="fa fa-trash-o"></i>
             </button>
           </div>

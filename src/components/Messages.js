@@ -5,8 +5,6 @@ export default class Messages extends React.Component{
 
 
   render(){
-    console.log("messages.js messages: ", this.props.messages)
-    console.log("selectedMessages: ", this.props.selectedMessages)
     return(
       <div className="container">
         <div className="list-group">

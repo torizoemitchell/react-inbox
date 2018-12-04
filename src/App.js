@@ -10,6 +10,7 @@ class App extends Component {
     this.state = {
       isLoaded: false,
       messages: [],
+      composeMessage: false
     }
   }
 
@@ -27,7 +28,6 @@ class App extends Component {
   }
 
   findIndexOfId = (findId) => {
-    console.log("type of findId", typeof findId)
     const messages = this.state.messages
     for(let i = 0; i < messages.length; i++){
       if(messages[i].id === parseInt(findId)){
@@ -39,7 +39,8 @@ class App extends Component {
 
   //takes an array of ids to be changed, a command(string)
   //returns the response from the server (an array of the new messages, with the patch applied.)
-  updateMessages = async(ids, command, bool) => {
+  updateMessages = async(ids, command, keyAndVal) => {
+    console.log("keyAndVal.key: ", keyAndVal.key, "keyAndVal.value", keyAndVal.value)
     const response = await fetch(`${process.env.REACT_APP_API_URL}messages`, {
       method: 'PATCH',
       headers: {
@@ -49,7 +50,7 @@ class App extends Component {
       body: JSON.stringify({
         messageIds: ids,
         command: command,
-        read: bool
+        [keyAndVal.key]: keyAndVal.value
       })
     })
     const jsonResponse = await response.json()
@@ -175,7 +176,7 @@ class App extends Component {
       }
     }
     //send the id's to the backend
-    const response = await this.updateMessages(unreadAndSelected, "read", true)
+    const response = await this.updateMessages(unreadAndSelected, "read", {key: "read", val:true})
     console.log("response: ", response)
     //set new state
     this.setState({
@@ -195,13 +196,78 @@ class App extends Component {
       }
     }
     //send the id's to the backend
-    const response = await this.updateMessages(readAndSelected, "read", false)
+    const response = await this.updateMessages(readAndSelected, "read", {key: "read", val:false})
     console.log("response: ", response)
     //set new state
     this.setState({
       ...this.state,
       messages: response
     })
+  }
+
+  deleteMessagesCB = async () => {
+    console.log("delete messages")
+    const messages = this.state.messages
+    let toDelete = []
+    //if the message is selected,
+    //push the id into toDelete.
+    for(let i = 0; i < messages.length; i++){
+      if(messages[i].selected){
+        toDelete.push(messages[i].id)
+      }
+    }
+    //send the id's to the backend
+    const response = await this.updateMessages(toDelete, "delete")
+    console.log("response: ", response)
+    //set new state
+    this.setState({
+      ...this.state,
+      messages: response
+    })
+  }
+
+  addLabelsCB = async(label) => {
+    const messages = this.state.messages
+    let addLabelsTo = []
+    //if the message is selected,
+    //push the id into addLabelsToThese.
+    for(let i = 0; i < messages.length; i++){
+      if(messages[i].selected){
+        addLabelsTo.push(messages[i].id)
+      }
+    }
+    //send the id's to the backend
+    const response = await this.updateMessages(addLabelsTo, "addLabel", {key: "label", value: label})
+    //update the state
+    this.setState({
+      ...this.state,
+      messages: response
+    })
+  }
+
+  removeLabelsCB = async(label) => {
+    console.log("removeLabels")
+    const messages = this.state.messages
+    let removeLabelsFrom = []
+    //if the message is selected,
+    //push the id into removeLabelsFrom.
+    for(let i = 0; i < messages.length; i++){
+      if(messages[i].selected){
+        removeLabelsFrom.push(messages[i].id)
+      }
+    }
+    //send the id's to the backend
+    const response = await this.updateMessages(removeLabelsFrom, "removeLabel", {key: "label", value: label})
+    console.log("response: ", response)
+    //update the state
+    this.setState({
+      ...this.state,
+      messages: response
+    })
+  }
+
+  composeMessageCB = () => {
+    console.log("show compose message form")
   }
 
   render() {
@@ -222,7 +288,12 @@ class App extends Component {
           markAsReadCB = {this.markAsReadCB}
           markAsUnreadCB = {this.markAsUnreadCB}
           numOfUnreadMessages = {this.getUnreadMessages(this.state.messages).length}
+          deleteMessagesCB = {this.deleteMessagesCB}
+          addLabelsCB = {this.addLabelsCB}
+          removeLabelsCB = {this.removeLabelsCB}
+          composeMessageCB = {this.composeMessageCB}
         />
+      {composeMessage ? <ComposeMessageForm/> : ''}
         <Messages
           messages={this.state.messages}
           selectMessageCB={this.selectMessageCB}

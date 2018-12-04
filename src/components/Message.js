@@ -15,19 +15,19 @@ export default class Message extends React.Component {
 
   checkStateOfMessage(read, selected){
     if(read && selected){
-      console.log("read && selected")
+      // console.log("read && selected")
       return "row message read selected"
     }
     else if ((!read || read === undefined) && selected){
-      console.log("unread && selected")
+      // console.log("unread && selected")
       return "row message unread selected"
     }
     else if (read && (!selected || selected === undefined)){
-      console.log("read && not selected")
+      // console.log("read && not selected")
       return "row message read"
     }
     else if ((!read || read === undefined) && (!selected || selected === undefined)){
-      console.log("unread && not selected")
+      // console.log("unread && not selected")
       return "row message unread"
     }
     else {
@@ -38,11 +38,8 @@ export default class Message extends React.Component {
 
 
   render(){
-    const isSelected = this.props.isSelected
-    const selectedMessages = this.props.selectedMessages
     const {
       subject,
-      body,
       labels,
       starred,
       id,
@@ -50,7 +47,6 @@ export default class Message extends React.Component {
       selected
     } = this.props.messageInfo
 
-    console.log("read: ", read)
     return(
 
       <div className={this.checkStateOfMessage(read,selected)}>
@@ -68,7 +64,7 @@ export default class Message extends React.Component {
           </div>
         </div>
         <div className="col-xs-11">
-          <a href="#">
+          <a href="somwhere">
             {labels ? labels.map((label, i) =>
               <span className="label label-warning" key={i}>{labels[i]}</span>
             ) : ''}
