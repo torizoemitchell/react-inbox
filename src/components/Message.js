@@ -15,30 +15,31 @@ export default class Message extends React.Component {
 
   checkStateOfMessage(read, selected){
     if(read && selected){
-      console.log("read && selected")
+      //console.log("read && selected")
       return "row message read selected"
     }
     else if (!read && selected){
-      console.log("unread && selected")
+      //console.log("unread && selected")
       return "row message unread selected"
     }
     else if (read && (!selected || selected === undefined)){
-      console.log("unread && selected")
+      //console.log("unread && selected")
       return "row message read"
     }
     else if (!read && (!selected || selected === undefined)){
-      console.log("unread && selected")
+      //console.log("unread && selected")
       return "row message unread"
     }
     else {
-      console.log("Not sure what happened.")
+      //console.log("Not sure what happened.")
     }
 
   }
 
 
   render(){
-
+    const isSelected = this.props.isSelected
+    const selectedMessages = this.props.selectedMessages
     const {
       subject,
       body,
@@ -48,15 +49,14 @@ export default class Message extends React.Component {
       read,
       selected
     } = this.props.messageInfo
-    console.log("selected: ", selected)
     return(
 
-      <div className={this.checkStateOfMessage(read, selected)}>
+      <div className={this.checkStateOfMessage(read,selected)}>
         <div className="col-xs-1">
           <div className="row">
             <div className="col-xs-2">
               <input type="checkbox"
-                checked={selected ? "checked" : ''}
+                checked={isSelected ? "checked" : ''}
                 onChange={(e) =>{e.preventDefault();this.props.selectMessageCB(id)}}
                />
             </div>

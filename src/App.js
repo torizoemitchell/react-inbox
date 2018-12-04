@@ -17,9 +17,12 @@ class App extends Component {
     const response = await fetch(`${process.env.REACT_APP_API_URL}messages`)
     const jsonResponse = await response.json()
     console.log("recieved response: ", jsonResponse)
+
     this.setState({
+      ...this.state,
       messages: jsonResponse,
       isLoaded: true,
+
     })
   }
 
@@ -34,28 +37,52 @@ class App extends Component {
     return -1
   }
 
+  //does not persist on page refresh
   selectMessageCB = (id) => {
-    console.log("id: ", id)
-    console.log("this.state: ", this.state.messages)
-    console.log("set state here")
-
     let i = this.findIndexOfId(id)
-    //flip the selected value in that message
-    let newMessage = {
+    //toggle the value of selected on the message at that index
+    const newMessage = {
       ...this.state.messages[i],
-      selected: (!this.state.messages[i].selected || false)
+      selected: !this.state.messages[i].selected
     }
     //set new state
     this.setState({
       ...this.state,
-      messages:[
+      messages: [
         ...this.state.messages.slice(0, i),
         newMessage,
         ...this.state.messages.slice(i + 1)
       ]
     })
+
+    //check to see if the message is already selected
+    // for(let i = 0; i < this.state.selectedMessages.length; i++){
+    //   if(this.state.selectedMessages[i].id === id){
+    //     //toggle off - remove from state
+    //     console.log("remove")
+    //     console.log("this.state.selectedMessages[i].id: ", this.state.selectedMessages[i].id)
+    //     console.log("id: ", id)
+    //     this.setState({
+    //       ...this.setState,
+    //       selectedMessages: this.state.selectedMessages.filter((message) => message.id != id)
+    //     })
+    //     return
+    //   }else{
+    //     console.log("adding to selected messages")
+    //     this.setState({
+    //       ...this.state,
+    //       selectedMessages: [
+    //         ...this.state.selectedMessages,
+    //         this.state.messages[i]
+    //       ]
+    //     })
+    //     return
+    //   }
+    //
+    // }
   }
 
+  //persists on page refresh
   updateStarCB = async(id) => {
     //post changes to API
     const response = await fetch(`${process.env.REACT_APP_API_URL}messages`, {
@@ -77,6 +104,55 @@ class App extends Component {
     })
   }
 
+  //returns an array of selected messages from the provided list
+  getSelectedMessages = (list) => {
+    let retArray = []
+    for(let i = 0; i < list.length; i++){
+      if(list[i].selected){
+        retArray.push(list[i])
+      }
+    }
+    return retArray
+  }
+
+  bulkSelectCB = () => {
+    console.log("bulkSelectCB")
+    const messages = this.state.messages
+    const selectedMessages = this.getSelectedMessages(messages)
+    let newMessages = []
+    console.log("selectedMessages: ", selectedMessages.length, "messages: ", messages.length)
+    //if none of the messages are selected, select them all
+    if(selectedMessages.length < messages.length){
+      console.log('change the state to selected for all')
+      for(let i = 0; i < messages.length; i++){
+        let newMessage = {
+          ...messages[i],
+          selected: true
+        }
+        newMessages.push(newMessage)
+      }
+      console.log("newMessages: ", newMessages)
+    }
+    //if all of the messages are selected, deselect them all
+    else if (selectedMessages.length === messages.length){
+      console.log('change the state to NOT SELECTED for all')
+      for(let i = 0; i < messages.length; i++){
+        let newMessage = {
+          ...messages[i],
+          selected: false
+        }
+        newMessages.push(newMessage)
+      }
+      console.log("newMessages: ", newMessages)
+    }
+
+    //update State
+    this.setState({
+      ...this.state,
+      messages: newMessages
+    })
+  }
+
   render() {
     if (!this.state.isLoaded) {
       return (
@@ -85,9 +161,14 @@ class App extends Component {
         </div>
       )
     } else {
+
       return (
-          <div>
-          <Toolbar/>
+        <div>
+        <Toolbar
+          messages={this.state.messages}
+          selectedMessages={this.getSelectedMessages(this.state.messages)}
+          bulkSelectCB = {this.bulkSelectCB}
+        />
         <Messages
           messages={this.state.messages}
           selectMessageCB={this.selectMessageCB}
