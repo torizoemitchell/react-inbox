@@ -18,8 +18,6 @@ class App extends Component {
   async componentDidMount() {
     const response = await fetch(`${process.env.REACT_APP_API_URL}messages`)
     const jsonResponse = await response.json()
-    console.log("recieved response: ", jsonResponse)
-
     this.setState({
       ...this.state,
       messages: jsonResponse,
@@ -140,7 +138,6 @@ class App extends Component {
     let newMessages = []
     //if none of the messages are selected, select them all
     if(selectedMessages.length < messages.length){
-      console.log('change the state to selected for all')
       for(let i = 0; i < messages.length; i++){
         let newMessage = {
           ...messages[i],
@@ -178,7 +175,6 @@ class App extends Component {
     }
     //send the id's to the backend
     const response = await this.updateMessages(unreadAndSelected, "read", {key: "read", val:true})
-    console.log("response: ", response)
     //set new state
     this.setState({
       ...this.state,
@@ -198,7 +194,6 @@ class App extends Component {
     }
     //send the id's to the backend
     const response = await this.updateMessages(readAndSelected, "read", {key: "read", val:false})
-    console.log("response: ", response)
     //set new state
     this.setState({
       ...this.state,
@@ -219,7 +214,6 @@ class App extends Component {
     }
     //send the id's to the backend
     const response = await this.updateMessages(toDelete, "delete")
-    console.log("response: ", response)
     //set new state
     this.setState({
       ...this.state,
@@ -247,7 +241,6 @@ class App extends Component {
   }
 
   removeLabelsCB = async(label) => {
-    console.log("removeLabels")
     const messages = this.state.messages
     let removeLabelsFrom = []
     //if the message is selected,
@@ -259,7 +252,6 @@ class App extends Component {
     }
     //send the id's to the backend
     const response = await this.updateMessages(removeLabelsFrom, "removeLabel", {key: "label", value: label})
-    console.log("response: ", response)
     //update the state
     this.setState({
       ...this.state,
@@ -274,9 +266,27 @@ class App extends Component {
     })
   }
 
-  sendMessageCB = (message) => {
-    console.log("send message")
+  sendMessageCB = async(message) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}messages`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message)
+    })
+    const jsonResponse = await response.json()
+    //update state
+    this.setState({
+      ...this.state,
+      messages: [
+        ...this.state.messages,
+        jsonResponse
+      ],
+      composeMessage: false
+    })
   }
+
   render() {
     if (!this.state.isLoaded) {
       return (
@@ -300,7 +310,7 @@ class App extends Component {
           removeLabelsCB = {this.removeLabelsCB}
           composeMessageCB = {this.composeMessageCB}
         />
-      {this.state.composeMessage ? <ComposeMessageForm/> : ''}
+        {this.state.composeMessage ? <ComposeMessageForm sendMessageCB={this.sendMessageCB}/> : ''}
         <Messages
           messages={this.state.messages}
           selectMessageCB={this.selectMessageCB}
