@@ -37,6 +37,25 @@ class App extends Component {
     return -1
   }
 
+  //takes an array of ids to be changed, a command(string)
+  //returns the response from the server (an array of the new messages, with the patch applied.)
+  updateMessages = async(ids, command, bool) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}messages`, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messageIds: ids,
+        command: command,
+        read: bool
+      })
+    })
+    const jsonResponse = await response.json()
+    return jsonResponse
+  }
+
   //does not persist on page refresh
   selectMessageCB = (id) => {
     let i = this.findIndexOfId(id)
@@ -84,23 +103,11 @@ class App extends Component {
 
   //persists on page refresh
   updateStarCB = async(id) => {
-    //post changes to API
-    const response = await fetch(`${process.env.REACT_APP_API_URL}messages`, {
-      method: 'PATCH',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messageIds: [parseInt(id)],
-        command: "star"
-      })
-    })
-    const jsonResponse = await response.json()
+    const ids = [parseInt(id)]
     //set the new state
     this.setState({
       ...this.state,
-      messages: jsonResponse
+      messages: await this.updateMessages(ids, "star")
     })
   }
 
@@ -115,12 +122,20 @@ class App extends Component {
     return retArray
   }
 
+  getUnreadMessages = (list) => {
+    let retArray = []
+    for(let i = 0; i < list.length; i++){
+      if(!list[i].read){
+        retArray.push(list[i])
+      }
+    }
+    return retArray
+  }
+
   bulkSelectCB = () => {
-    console.log("bulkSelectCB")
     const messages = this.state.messages
     const selectedMessages = this.getSelectedMessages(messages)
     let newMessages = []
-    console.log("selectedMessages: ", selectedMessages.length, "messages: ", messages.length)
     //if none of the messages are selected, select them all
     if(selectedMessages.length < messages.length){
       console.log('change the state to selected for all')
@@ -131,11 +146,9 @@ class App extends Component {
         }
         newMessages.push(newMessage)
       }
-      console.log("newMessages: ", newMessages)
     }
     //if all of the messages are selected, deselect them all
     else if (selectedMessages.length === messages.length){
-      console.log('change the state to NOT SELECTED for all')
       for(let i = 0; i < messages.length; i++){
         let newMessage = {
           ...messages[i],
@@ -143,13 +156,51 @@ class App extends Component {
         }
         newMessages.push(newMessage)
       }
-      console.log("newMessages: ", newMessages)
     }
-
     //update State
     this.setState({
       ...this.state,
       messages: newMessages
+    })
+  }
+
+  markAsReadCB = async() => {
+    const messages = this.state.messages
+    let unreadAndSelected = []
+    //if the message is unread and selected,
+    //push the id into unreadAndSelected.
+    for(let i = 0; i < messages.length; i++){
+      if(messages[i].selected && !messages[i].read){
+        unreadAndSelected.push(messages[i].id)
+      }
+    }
+    //send the id's to the backend
+    const response = await this.updateMessages(unreadAndSelected, "read", true)
+    console.log("response: ", response)
+    //set new state
+    this.setState({
+      ...this.state,
+      messages: response
+    })
+  }
+
+  markAsUnreadCB = async() => {
+    const messages = this.state.messages
+    let readAndSelected = []
+    //if the message is read and selected,
+    //push the id into readAndSelected.
+    for(let i = 0; i < messages.length; i++){
+      if(messages[i].selected && messages[i].read){
+        readAndSelected.push(messages[i].id)
+      }
+    }
+    //send the id's to the backend
+    const response = await this.updateMessages(readAndSelected, "read", false)
+    console.log("response: ", response)
+    //set new state
+    this.setState({
+      ...this.state,
+      messages: response
     })
   }
 
@@ -168,6 +219,9 @@ class App extends Component {
           messages={this.state.messages}
           selectedMessages={this.getSelectedMessages(this.state.messages)}
           bulkSelectCB = {this.bulkSelectCB}
+          markAsReadCB = {this.markAsReadCB}
+          markAsUnreadCB = {this.markAsUnreadCB}
+          numOfUnreadMessages = {this.getUnreadMessages(this.state.messages).length}
         />
         <Messages
           messages={this.state.messages}

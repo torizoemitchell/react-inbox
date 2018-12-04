@@ -24,7 +24,10 @@ export default class Toolbar extends React.Component {
     const {
       selectedMessages,
       messages,
-      bulkSelectCB
+      bulkSelectCB,
+      markAsReadCB,
+      markAsUnreadCB,
+      numOfUnreadMessages
     } = this.props
 
     return(
@@ -32,8 +35,8 @@ export default class Toolbar extends React.Component {
         <div className="row toolbar">
           <div className="col-md-12">
             <p className="pull-right">
-              <span className="badge badge">2</span>
-              unread messages
+              <span className="badge badge">{numOfUnreadMessages}</span>
+            {numOfUnreadMessages === 1 ? "unread message" : "unread messages"}
             </p>
 
             <a className="btn btn-danger" href="somewhere">
@@ -44,25 +47,25 @@ export default class Toolbar extends React.Component {
               <i className={this.selectionIndicator(selectedMessages, messages)}></i>
             </button>
 
-            <button className="btn btn-default">Mark As Read</button>
+            <button className="btn btn-default" onClick={(e) => {e.preventDefault(); markAsReadCB()}} disabled={selectedMessages.length === 0 ? true : false}>Mark As Read</button>
 
-            <button className="btn btn-default">Mark As Unread</button>
+          <button className="btn btn-default" onClick={(e) => {e.preventDefault(); markAsUnreadCB()}} disabled={selectedMessages.length === 0 ? true : false}>Mark As Unread</button>
 
-            <select className="form-control label-select">
+            <select className="form-control label-select" disabled={selectedMessages.length === 0 ? true : false}>
               <option>Apply label</option>
               <option value="dev">dev</option>
               <option value="personal">personal</option>
               <option value="gschool">gschool</option>
             </select>
 
-            <select className="form-control label-select">
+            <select className="form-control label-select" disabled={selectedMessages.length === 0 ? true : false}>
               <option>Remove label</option>
               <option value="dev">dev</option>
               <option value="personal">personal</option>
               <option value="gschool">gschool</option>
             </select>
 
-            <button className="btn btn-default">
+            <button className="btn btn-default" disabled={selectedMessages.length === 0 ? true : false}>
               <i className="fa fa-trash-o"></i>
             </button>
           </div>

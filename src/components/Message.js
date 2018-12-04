@@ -2,36 +2,36 @@ import React from 'react'
 
 export default class Message extends React.Component {
 
-  // state = {
-  //   isChecked: false
-  // }
-  //
-  // checkTheBox = () => {
-  //   this.setState({
-  //     isChecked: !this.state.isChecked
-  //   })
-  // }
+  state = {
+    isChecked: this.props.messageInfo.selected
+  }
+
+  checkTheBox = () => {
+    this.setState({
+      isChecked: !this.state.isChecked
+    })
+  }
 
 
   checkStateOfMessage(read, selected){
     if(read && selected){
-      //console.log("read && selected")
+      console.log("read && selected")
       return "row message read selected"
     }
-    else if (!read && selected){
-      //console.log("unread && selected")
+    else if ((!read || read === undefined) && selected){
+      console.log("unread && selected")
       return "row message unread selected"
     }
     else if (read && (!selected || selected === undefined)){
-      //console.log("unread && selected")
+      console.log("read && not selected")
       return "row message read"
     }
-    else if (!read && (!selected || selected === undefined)){
-      //console.log("unread && selected")
+    else if ((!read || read === undefined) && (!selected || selected === undefined)){
+      console.log("unread && not selected")
       return "row message unread"
     }
     else {
-      //console.log("Not sure what happened.")
+      console.log("Not sure what happened.")
     }
 
   }
@@ -49,6 +49,8 @@ export default class Message extends React.Component {
       read,
       selected
     } = this.props.messageInfo
+
+    console.log("read: ", read)
     return(
 
       <div className={this.checkStateOfMessage(read,selected)}>
@@ -56,7 +58,7 @@ export default class Message extends React.Component {
           <div className="row">
             <div className="col-xs-2">
               <input type="checkbox"
-                checked={isSelected ? "checked" : ''}
+                checked={selected ? "checked" : ''}
                 onChange={(e) =>{e.preventDefault();this.props.selectMessageCB(id)}}
                />
             </div>
