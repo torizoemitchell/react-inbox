@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import './App.css'
 import Toolbar from './components/Toolbar.js'
 import Messages from './components/Messages.js'
+import ComposeMessageForm from './components/ComposeMessageForm.js'
 
 class App extends Component {
 
@@ -267,9 +268,15 @@ class App extends Component {
   }
 
   composeMessageCB = () => {
-    console.log("show compose message form")
+    this.setState({
+      ...this.state,
+      composeMessage: !this.state.composeMessage
+    })
   }
 
+  sendMessageCB = (message) => {
+    console.log("send message")
+  }
   render() {
     if (!this.state.isLoaded) {
       return (
@@ -293,7 +300,7 @@ class App extends Component {
           removeLabelsCB = {this.removeLabelsCB}
           composeMessageCB = {this.composeMessageCB}
         />
-      {composeMessage ? <ComposeMessageForm/> : ''}
+      {this.state.composeMessage ? <ComposeMessageForm/> : ''}
         <Messages
           messages={this.state.messages}
           selectMessageCB={this.selectMessageCB}

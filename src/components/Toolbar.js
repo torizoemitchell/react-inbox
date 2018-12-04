@@ -30,6 +30,7 @@ export default class Toolbar extends React.Component {
       deleteMessagesCB,
       addLabelsCB,
       removeLabelsCB,
+      composeMessageCB,
       numOfUnreadMessages
     } = this.props
 
@@ -42,7 +43,7 @@ export default class Toolbar extends React.Component {
             {numOfUnreadMessages === 1 ? "unread message" : "unread messages"}
             </p>
 
-            <a className="btn btn-danger" href="somewhere">
+            <a className="btn btn-danger" href="somewhere" onClick={(e) => {e.preventDefault(); composeMessageCB()}}>
               <i className="fa fa-plus"></i>
             </a>
 
