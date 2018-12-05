@@ -174,7 +174,8 @@ class App extends Component {
       }
     }
     //send the id's to the backend
-    const response = await this.updateMessages(unreadAndSelected, "read", {key: "read", val:true})
+    const response = await this.updateMessages(unreadAndSelected, "read", {key: "read", value:true})
+    console.log("response: ", response)
     //set new state
     this.setState({
       ...this.state,
