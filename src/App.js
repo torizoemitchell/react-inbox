@@ -38,7 +38,7 @@ class App extends Component {
 
   //takes an array of ids to be changed, a command(string)
   //returns the response from the server (an array of the new messages, with the patch applied.)
-  updateMessages = async(ids, command, keyAndVal) => {
+  updateMessages = async(ids, command, keyAndVal = {}) => {
     console.log("keyAndVal.key: ", keyAndVal.key, "keyAndVal.value", keyAndVal.value)
     const response = await fetch(`${process.env.REACT_APP_API_URL}messages`, {
       method: 'PATCH',
